@@ -1,6 +1,6 @@
 # vimmdl
 
-A utility to download files from Vimm.net.
+A utility for downloading files from Vimm.net.
 Usage can be found in the screenshots below.
 
 ![Demo Image, Help Screen](http://i.imgur.com/qvQYFPC.jpg)
