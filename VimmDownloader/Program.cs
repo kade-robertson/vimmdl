@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Net;
-using System.Text;
+using Nito.AsyncEx;
 
 namespace VimmDownloader 
 {
@@ -41,15 +39,18 @@ namespace VimmDownloader
                         Console.Write($"] {e.ProgressPercentage.ToString()}% ({bstrings[0]} / {bstrings[1]})    \r\r");
                     };
 
-                    wc.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.98");
+                    wc.Headers.Add("User-Agent", "Mozilla/5.0");
                     wc.Headers.Add("Referer", "http://vimm.net/vault/?p=details&id={id}");
-                    Nito.AsyncEx.AsyncContext.Run(() => wc.DownloadFileTaskAsync(new Uri($"http://download.vimm.net/download.php?id={id}"), $"{id}.tmp"));
+                    AsyncContext.Run(() => wc.DownloadFileTaskAsync(new Uri($"http://download.vimm.net/download.php?id={id}"), $"{id}.tmp"));
                     File.Move($"{id}.tmp", wc.ResponseHeaders["Content-Disposition"].Split('"')[1]);
                     Console.WriteLine("\nDownload completed!");
                 } catch (Exception ex) {
                     Console.WriteLine($"[!] {ex.Message}");
                     Console.WriteLine("[!] Error: Unable to download file. Exiting...");
                     return;
+                }
+                if (wc.IsBusy) {
+                    AsyncContext.Run(() => wc.CancelAsync());
                 }
             }
         }
