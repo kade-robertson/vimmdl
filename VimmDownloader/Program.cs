@@ -10,6 +10,8 @@ namespace VimmDownloader
 {
     class Program 
     {
+        // Determines the appropriate size unit to use for reporting the
+        // file size.
         static KeyValuePair<string, int> GetSizeString(long val) {
             string ret = "B";
             int pow = 0;
@@ -27,6 +29,8 @@ namespace VimmDownloader
             return new KeyValuePair<string, int>($"{((double)val / Math.Pow(1024, pow)).ToString("0.00")} {ret}", pow);
         }
 
+        // This was made so that the units of the current download amount
+        // match the units of the final download amount.
         static string SetSizeString(long val, int pow) {
             string ret = "B";
             switch (pow) {
@@ -40,6 +44,9 @@ namespace VimmDownloader
 
         static void DoDownload(uint id) {
             using (var wc = new WebClient()) {
+                // Most of these are state variables for tracking the download speed.
+                // Simply uses an array of 1,000 doubles to track the most recent speeds,
+                // which will later be averaged when displayed.
                 var measr = new double[1000];
                 var point = 0L;
                 var watch = new Stopwatch();
@@ -58,6 +65,8 @@ namespace VimmDownloader
                         measr[point++ % 1000] = dp;
                         lastb = e.BytesReceived;
 
+                        // This is simply to remember where the status information is printed,
+                        // because we need to return there to make sure everything prints nicely.
                         if (mrow == 0 && mcol == 0) {
                             Console.Write("    ");
                             mrow = Console.CursorTop;
@@ -89,13 +98,23 @@ namespace VimmDownloader
                         watch.Restart();
                     };
 
+                    // Vimm won't allow you to download without a "valid" user agent, however this small
+                    // snippet of one allows it to work just fine.
                     wc.Headers.Add("User-Agent", "Mozilla/5.0");
+
+                    // You will be directed to the ROM's main page if you don't include it as the
+                    // referring page.
                     wc.Headers.Add("Referer", "http://vimm.net/vault/?p=details&id={id}");
                     watch.Start();
 
+                    // AsyncContext helps an issue I was noticing previously, because some of the progress
+                    // reports were coming far after ones that should have been the other way around (i.e.
+                    // it would print 44% before 23%).
                     AsyncContext.Run(() => wc.DownloadFileTaskAsync(new Uri($"http://download.vimm.net/download.php?id={id}"), $"{id}.tmp"));
 
+                    // Unfortunately this is the only way I can find out the intended name of the file.
                     var newname = wc.ResponseHeaders["Content-Disposition"].Split('"')[1];
+
                     File.Delete(newname);
                     File.Move($"{id}.tmp", newname);
                     Console.CursorTop += 2;
