@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VimmDownloader", "VimmDownloader\VimmDownloader.csproj", "{0B488D25-9C49-41ED-A1A3-CBDAA2EE2D9F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "vimmdl", "vimmdl\vimmdl.csproj", "{0B488D25-9C49-41ED-A1A3-CBDAA2EE2D9F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

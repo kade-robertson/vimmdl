@@ -92,6 +92,11 @@ namespace VimmDownloader
                         Console.Write($"({SetSizeString(e.BytesReceived, cpowr)} / {totab}) ");
                         Console.Write($"({GetSizeString((long)measr.Average()).Key}/s)   \r\r");
 
+                        // Just some throttling so the title of the window isn't updated too often.
+                        if (point % 100 == 0) {
+                            Console.Title = $"Vimm Downloader | {SetSizeString(e.BytesReceived, cpowr)} of {totab}, {GetSizeString((long)measr.Average()).Key}";
+                        }
+
                         Console.CursorTop = mrow;
                         Console.CursorLeft = mcol;
 
@@ -104,7 +109,7 @@ namespace VimmDownloader
 
                     // You will be directed to the ROM's main page if you don't include it as the
                     // referring page.
-                    wc.Headers.Add("Referer", "http://vimm.net/vault/?p=details&id={id}");
+                    wc.Headers.Add("Referer", $"http://vimm.net/vault/?p=details&id={id}");
                     watch.Start();
 
                     // AsyncContext helps an issue I was noticing previously, because some of the progress
@@ -123,6 +128,7 @@ namespace VimmDownloader
                     Console.CursorTop += 2;
                     Console.WriteLine("\n    [i] Download completed!");
                     Console.WriteLine($"    [i] File name: {newname}");
+                    Console.Title = "Vimm Downloader | Complete";
                 } catch (Exception ex) {
                     Console.WriteLine($"\n    [!] {ex.Message}");
                     Console.WriteLine("    [!] Error: Unable to download file. Exiting...");
@@ -148,6 +154,8 @@ namespace VimmDownloader
             if (args.Length > 1) {
                 spath = args[1];
             }
+
+            Console.Title = "Vimm Downloader | Idle";
 
             Console.WriteLine("                         _    __ _                                       ");
             Console.WriteLine("                        | |  / /(_)____ ___   ____ ___                   ");
