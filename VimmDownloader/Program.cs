@@ -42,7 +42,7 @@ namespace VimmDownloader
             return $"{((double)val / Math.Pow(1024, pow)).ToString("0.00")} {ret}";
         }
 
-        static void DoDownload(uint id) {
+        static void DoDownload(uint id, string opath = "") {
             using (var wc = new WebClient()) {
                 // Most of these are state variables for tracking the download speed.
                 // Simply uses an array of 1,000 doubles to track the most recent speeds,
@@ -51,7 +51,7 @@ namespace VimmDownloader
                 var point = 0L;
                 var watch = new Stopwatch();
                 var lastb = 0L;
-                var totab = "";
+                var totab = string.Empty;
                 var cpowr = 0;
                 var mrow = 0;
                 var mcol = 0;
@@ -114,6 +114,9 @@ namespace VimmDownloader
 
                     // Unfortunately this is the only way I can find out the intended name of the file.
                     var newname = wc.ResponseHeaders["Content-Disposition"].Split('"')[1];
+                    if (opath != string.Empty) {
+                        newname = opath;
+                    }
 
                     File.Delete(newname);
                     File.Move($"{id}.tmp", newname);
@@ -134,6 +137,18 @@ namespace VimmDownloader
 
         static void Main(string[] args) {
             var id = (uint)0;
+            var spath = string.Empty;
+
+            if (args.Length > 0) {
+                try {
+                    id = uint.Parse(args[0]);
+                } catch { }
+            }
+
+            if (args.Length > 1) {
+                spath = args[1];
+            }
+
             Console.WriteLine("                         _    __ _                                       ");
             Console.WriteLine("                        | |  / /(_)____ ___   ____ ___                   ");
             Console.WriteLine("                        | | / // // __ `__ \\ / __ `__ \\                  ");
@@ -146,18 +161,30 @@ namespace VimmDownloader
             Console.WriteLine();
             Console.WriteLine("   ========================================================================");
             Console.WriteLine();
-            Console.Write("    [?] Enter the download ID: ");
+            if (args.Where(x => x == "/?").Count() > 0) {
+                Console.WriteLine("    [i] Usage:");
+                Console.WriteLine("    [i]   - vimmdownloader.exe (displays the prompt window)");
+                Console.WriteLine("    [i]   - vimmdownloader.exe <id> (downloads the specific ID)");
+                Console.WriteLine("    [i]   - vimmdownloader.exe <id> <path> (downloads the file to a specified path)");
+                Console.Read();
+            } else {
+                Console.Write("    [?] Enter the download ID: ");
 
-            try {
-                id = uint.Parse(Console.ReadLine());
-            } catch {
-                Console.WriteLine("    [!] Error: Unable to parse an ID. Exiting...");
-                return;
+                if (id > 0) {
+                    Console.WriteLine(id);
+                } else {
+                    try {
+                        id = uint.Parse(Console.ReadLine());
+                    } catch {
+                        Console.WriteLine("    [!] Error: Unable to parse an ID. Exiting...");
+                        return;
+                    }
+                }
+
+                Console.WriteLine($"    [i] Attempting to download ID {id}...");
+                DoDownload(id, spath);
+                Console.Read();
             }
-
-            Console.WriteLine($"    [i] Attempting to download ID {id}...");
-            DoDownload(id);
-            Console.Read();
         }
     }
 }
