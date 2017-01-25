@@ -171,9 +171,9 @@ namespace VimmDownloader
             Console.WriteLine();
             if (args.Where(x => x == "/?").Count() > 0) {
                 Console.WriteLine("    [i] Usage:");
-                Console.WriteLine("    [i]   - vimmdownloader.exe (displays the prompt window)");
-                Console.WriteLine("    [i]   - vimmdownloader.exe <id> (downloads the specific ID)");
-                Console.WriteLine("    [i]   - vimmdownloader.exe <id> <path> (downloads the file to a specified path)");
+                Console.WriteLine("    [i]   - vimmdl (displays the prompt window)");
+                Console.WriteLine("    [i]   - vimmdl <id> (downloads the specific ID)");
+                Console.WriteLine("    [i]   - vimmdl <id> <path> (downloads the file to a specified path)");
                 Console.Read();
             } else {
                 Console.Write("    [?] Enter the download ID: ");
